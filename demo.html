@@ -1,0 +1,348 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Sightline AI</title>
+<style>
+/* Layout concept: a single vertical channel (like a sightline) the reader
+   follows top to bottom — problem, mechanism, a real voice, then the plan. */
+:root{
+  --bg:#EEF1F5; --bg-alt:#FFFFFF; --card:#E4E9F0;
+  --fg:#10192B; --fg-muted:#51607A;
+  --accent:#B5661F; --accent-ink:#FFFFFF;
+  --border:rgba(16,25,43,0.12);
+  --mono-bg:#E2E6ED;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1526; --bg-alt:#121B30; --card:#16213A;
+    --fg:#ECEFF4; --fg-muted:#9AA7C2;
+    --accent:#E0A458; --accent-ink:#1A1206;
+    --border:rgba(236,239,244,0.12);
+    --mono-bg:#101A30;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1526; --bg-alt:#121B30; --card:#16213A;
+  --fg:#ECEFF4; --fg-muted:#9AA7C2;
+  --accent:#E0A458; --accent-ink:#1A1206;
+  --border:rgba(236,239,244,0.12);
+  --mono-bg:#101A30;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:"Work Sans",system-ui,-apple-system,sans-serif;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+  line-height:1.55;
+}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif; text-wrap:balance; margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+
+.wrap{max-width:720px; margin:0 auto; padding-block:48px}
+header.top{
+  max-width:720px; margin:0 auto; padding-block:20px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  border-bottom:1px solid var(--border);
+}
+.brand{display:flex; align-items:center; gap:10px; font-weight:600; font-size:1.05rem}
+.brand svg{flex:none}
+nav a{color:var(--fg-muted); text-decoration:none; font-size:0.92rem; margin-left:18px}
+nav a:hover, nav a:focus-visible{color:var(--accent)}
+
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:0.78rem; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--accent); margin-bottom:10px;
+}
+.hero h1{font-size:clamp(2rem,5vw,2.9rem); line-height:1.12}
+.hero p.lede{font-size:1.15rem; color:var(--fg-muted); margin-top:16px; max-width:34ch}
+.cta-row{display:flex; gap:12px; margin-top:28px; flex-wrap:wrap}
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:11px 18px; border-radius:8px; font-weight:600; font-size:0.95rem;
+  text-decoration:none; border:1px solid var(--border); cursor:pointer;
+  background:var(--card); color:var(--fg); transition:transform .15s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:var(--accent); color:var(--accent-ink); border-color:transparent}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+section{padding-block:40px; border-top:1px solid var(--border)}
+section h2{font-size:1.6rem; margin-bottom:6px}
+section p.sub{color:var(--fg-muted); max-width:46ch; margin-top:8px}
+
+.gap-grid{display:flex; gap:16px; margin-top:28px; flex-wrap:wrap}
+.gap-card{
+  flex:1 1 240px; min-width:0; background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:18px;
+}
+.gap-card .tag{font-family:"IBM Plex Mono",monospace; font-size:0.72rem; color:var(--fg-muted); text-transform:uppercase; letter-spacing:.06em}
+.gap-card h3{font-size:1.05rem; margin-top:6px}
+.gap-card p{color:var(--fg-muted); font-size:0.92rem; margin-top:8px}
+
+.flow{display:flex; align-items:stretch; gap:10px; margin-top:28px; flex-wrap:wrap}
+.flow .step{
+  flex:1 1 150px; min-width:0; background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:10px; padding:16px; text-align:left;
+}
+.flow .step .n{font-family:"IBM Plex Mono",monospace; color:var(--accent); font-size:0.78rem}
+.flow .step h4{font-family:"Fraunces",serif; font-size:1rem; margin-top:6px}
+.flow .step p{font-size:0.85rem; color:var(--fg-muted); margin-top:6px}
+.flow .arrow{display:flex; align-items:center; justify-content:center; color:var(--fg-muted); font-size:1.3rem; flex:0 0 auto}
+@media (max-width:620px){ .flow .arrow{transform:rotate(90deg)} }
+
+.demo-box{
+  margin-top:28px; background:var(--bg-alt); border:1px solid var(--border);
+  border-radius:12px; padding:22px;
+}
+.demo-box .label{font-family:"IBM Plex Mono",monospace; font-size:0.75rem; color:var(--fg-muted); text-transform:uppercase; letter-spacing:.06em}
+.transcript{
+  margin-top:14px; background:var(--mono-bg); border-radius:8px; padding:16px;
+  font-size:0.95rem; border:1px solid var(--border);
+}
+.demo-actions{display:flex; gap:10px; margin-top:16px; align-items:center; flex-wrap:wrap}
+.timing{font-family:"IBM Plex Mono",monospace; font-size:0.8rem; color:var(--fg-muted)}
+
+.voice-box{margin-top:20px}
+textarea{
+  width:100%; min-height:72px; padding:12px; border-radius:8px; border:1px solid var(--border);
+  background:var(--mono-bg); color:var(--fg); font-family:"Work Sans",sans-serif; font-size:0.95rem;
+  resize:vertical;
+}
+textarea:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+.roadmap{list-style:none; margin-top:24px; padding:0; display:flex; flex-direction:column; gap:10px}
+.roadmap li{display:flex; gap:10px; align-items:flex-start; font-size:0.95rem}
+.roadmap svg{flex:none; margin-top:3px}
+.roadmap li.done{color:var(--fg)}
+.roadmap li:not(.done){color:var(--fg-muted)}
+
+.decisions{margin-top:24px; display:flex; flex-direction:column; gap:16px}
+.decisions .item{border-left:2px solid var(--accent); padding-left:16px}
+.decisions .item h4{font-size:0.98rem; font-family:"Fraunces",serif}
+.decisions .item p{font-size:0.9rem; color:var(--fg-muted); margin-top:4px}
+
+.icp-quote{
+  margin-top:28px; background:var(--card); border-radius:10px; padding:20px;
+  border:1px solid var(--border);
+}
+.icp-quote p{font-size:1.02rem; font-family:"Fraunces",serif; font-style:italic}
+.icp-quote .who{margin-top:10px; font-family:"IBM Plex Mono",monospace; font-size:0.78rem; color:var(--fg-muted)}
+
+footer{max-width:720px; margin:0 auto; padding-block:36px; color:var(--fg-muted); font-size:0.85rem}
+footer a{color:var(--accent)}
+.sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0)}
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<header class="top">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="12" y1="3" x2="12" y2="7" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="12" cy="12" r="2.4" fill="currentColor"/>
+    </svg>
+    Sightline AI
+  </div>
+  <nav aria-label="Section links">
+    <a href="#demo">Demo</a>
+    <a href="#how">How it works</a>
+    <a href="#roadmap">Roadmap</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div class="eyebrow">Accessibility · Day‑1 prototype</div>
+    <h1>Screen readers can't see a video call.<br>This describes it out loud.</h1>
+    <p class="lede">VoiceOver and TalkBack read menus, buttons, and documents. Neither can read a shared slide, a chart, or a presenter's screen during Zoom, Teams, or Google Meet — because that's just pixels, not accessible text. Sightline AI closes that gap.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#demo">Hear a real description</a>
+      <a class="btn" href="https://github.com/meghasainath/sightline-AI" target="_blank" rel="noopener">View source on GitHub</a>
+    </div>
+  </div>
+
+  <section id="gap">
+    <div class="wrap" style="padding-block:0">
+      <h2>Where the gap actually is</h2>
+      <p class="sub">Every screen reader already does the first half of accessibility well. The second half — live, pixel-only content during a call — has no existing hook.</p>
+      <div class="gap-grid">
+        <div class="gap-card">
+          <div class="tag">What works today</div>
+          <h3>Static screens, read fine</h3>
+          <p>VoiceOver and TalkBack narrate accessibility-tree content: labeled buttons, documents, most app UI.</p>
+        </div>
+        <div class="gap-card">
+          <div class="tag">What doesn't</div>
+          <h3>Live call content, invisible</h3>
+          <p>A shared slide or chart rendered inside Zoom, Meet, or Teams is just pixels in a video stream — no accessibility tree to read.</p>
+        </div>
+        <div class="gap-card">
+          <div class="tag">Who told us this</div>
+          <h3>A real pain point, not a guess</h3>
+          <p>This came directly from a visually impaired former colleague describing what actually blocks him at work.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap" style="padding-block:0">
+      <h2>How it works</h2>
+      <p class="sub">On‑demand, not proactive — the user presses a key when they want to know what changed, so the AI never talks over whoever is presenting.</p>
+      <div class="flow">
+        <div class="step">
+          <div class="n">01</div>
+          <h4>Capture</h4>
+          <p>macOS <span class="mono">screencapture</span> grabs the current screen the instant the user asks.</p>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="step">
+          <div class="n">02</div>
+          <h4>Describe</h4>
+          <p>Gemini vision reads the image against an accessibility‑tuned prompt — slide text, charts, shared documents only.</p>
+        </div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="step">
+          <div class="n">03</div>
+          <h4>Speak</h4>
+          <p>The description is read aloud through native macOS speech, blocking until it finishes so it can't get cut off.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="wrap" style="padding-block:0">
+      <h2>A real description, not a mockup</h2>
+      <p class="sub">This is unedited output from an actual run of the prototype — a live screenshot sent to Gemini, spoken back through macOS speech. Press play to hear it the way it was actually heard.</p>
+
+      <div class="demo-box">
+        <div class="label">Live test transcript</div>
+        <div class="transcript" id="transcript">The screen shows a macOS desktop with several windows open. The primary focus is a Sightline AI terminal window, which states it's ready to listen and instructs the user to press Enter to capture and describe the screen or 'q' to quit. Below the terminal, part of a Chrome browser window is visible, displaying navigation links like "Tutorials" and "Feedback." Overlapping these, a chat window shows a reply box, a message from Megha Sainath, and text stating "Claude is AI and can make mistakes."</div>
+        <div class="demo-actions">
+          <button class="btn primary" id="playBtn" type="button">▶ Play description</button>
+          <span class="timing" id="timingNote">captured → analyzed in 20.59s → spoken aloud</span>
+        </div>
+      </div>
+
+      <div class="voice-box">
+        <div class="label">Try the voice yourself</div>
+        <p class="sub" style="margin-top:6px">Type anything — this uses the same on‑device speech output the app speaks descriptions through.</p>
+        <textarea id="customText" aria-label="Text to speak" placeholder="A bar chart titled Q3 revenue, three bars rising left to right…"></textarea>
+        <div class="demo-actions">
+          <button class="btn" id="speakCustom" type="button">▶ Speak this</button>
+          <button class="btn" id="stopSpeak" type="button">■ Stop</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="decisions">
+    <div class="wrap" style="padding-block:0">
+      <h2>Design decisions</h2>
+      <p class="sub">Choices made deliberately for this user base, not defaults.</p>
+      <div class="decisions">
+        <div class="item">
+          <h4>On‑demand, never proactive</h4>
+          <p>The user controls when a description happens, so it can't interrupt someone speaking.</p>
+        </div>
+        <div class="item">
+          <h4>Visual‑only descriptions</h4>
+          <p>Never repeats what's being said aloud — the user can already hear that. Only describes what's silently on screen.</p>
+        </div>
+        <div class="item">
+          <h4>Speech that can't be cut off</h4>
+          <p>The app waits for a description to finish speaking before accepting the next request.</p>
+        </div>
+        <div class="item">
+          <h4>Model fallback, not a single point of failure</h4>
+          <p>Tries several Gemini model names in order, so one overloaded or deprecated model doesn't take the whole tool down.</p>
+        </div>
+        <div class="item">
+          <h4>Privacy over raw accuracy</h4>
+          <p>On‑device processing is the long‑term goal — a real trust differentiator for a user base sharing work calls, even if it costs some sharpness versus a cloud model.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <div class="wrap" style="padding-block:0">
+      <h2>Roadmap</h2>
+      <p class="sub">What exists today, and what comes after the idea is validated.</p>
+      <ul class="roadmap">
+        <li class="done"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--accent)"/><path d="M8 12.5l2.5 2.5L16 9" stroke="var(--accent-ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> One‑shot screenshot → Gemini → spoken description (macOS)</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></svg> Validate description quality with real users</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></svg> Target the active call window instead of full screen</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></svg> Global hotkey instead of a terminal prompt</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></svg> Continuous capture with frame‑differential filtering</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></svg> On‑device processing for privacy</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></svg> Windows support</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.4" opacity="0.5"/></svg> Mobile — Android (MediaProjection/AccessibilityService), iOS (ReplayKit)</li>
+      </ul>
+
+      <div class="icp-quote">
+        <p>Built for the people existing tools describe only in theory: visually impaired professionals in live work calls, and senior users who've never touched a screen reader at all.</p>
+        <div class="who">ICP — visually impaired users &amp; senior citizens</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Sightline AI — built from a conversation with a visually impaired former colleague about what actually blocks him at work. Source on <a href="https://github.com/meghasainath/sightline-AI" target="_blank" rel="noopener">GitHub</a>.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var synth = window.speechSynthesis;
+
+  function speak(text, btn, resetLabel){
+    if(!synth){ if(btn) btn.disabled = true; return; }
+    synth.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.rate = 1;
+    if(btn){
+      btn.textContent = "■ Stop";
+      u.onend = function(){ btn.textContent = resetLabel; };
+      u.onerror = function(){ btn.textContent = resetLabel; };
+    }
+    synth.speak(u);
+  }
+
+  var playBtn = document.getElementById("playBtn");
+  var transcript = document.getElementById("transcript");
+  if(playBtn){
+    playBtn.addEventListener("click", function(){
+      if(synth && synth.speaking){
+        synth.cancel();
+        playBtn.textContent = "▶ Play description";
+        return;
+      }
+      speak(transcript.textContent, playBtn, "▶ Play description");
+    });
+  }
+
+  var speakCustom = document.getElementById("speakCustom");
+  var customText = document.getElementById("customText");
+  var stopSpeak = document.getElementById("stopSpeak");
+  if(speakCustom){
+    speakCustom.addEventListener("click", function(){
+      var text = (customText.value || "").trim();
+      if(!text){ customText.focus(); return; }
+      speak(text, null, null);
+    });
+  }
+  if(stopSpeak){
+    stopSpeak.addEventListener("click", function(){
+      if(synth) synth.cancel();
+      if(playBtn) playBtn.textContent = "▶ Play description";
+    });
+  }
+})();
+</script>
