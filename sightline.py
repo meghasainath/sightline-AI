@@ -17,7 +17,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Try a list of models in order, falling back if one is overloaded/unavailable.
-CANDIDATE_MODELS = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.0-flash", "gemini-3.8-flash"]
+# Stable, widely-available names first (safest on Vertex AI), newer/public-API
+# names after.
+CANDIDATE_MODELS = [
+    "gemini-2.0-flash-001",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash-002",
+    "gemini-2.5-flash",
+    "gemini-flash-latest",
+    "gemini-3.8-flash",
+]
 
 
 class SpeechEngine:
@@ -80,8 +89,21 @@ def capture_screen(output_path: str) -> bool:
         return False
 
 
-def get_gemini_client(api_key: str):
+def get_gemini_client(api_key: str = None):
+    """Initialize Google GenAI client.
+
+    If GOOGLE_CLOUD_PROJECT is set (e.g. from a Vertex AI / gcloud setup),
+    use Vertex AI with Application Default Credentials — no API key needed.
+    Otherwise fall back to a plain Gemini API key.
+    """
     from google import genai
+
+    project = os.getenv("GOOGLE_CLOUD_PROJECT")
+    if project:
+        location = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+        print(f"[Info] Using Vertex AI (project={project}, location={location})")
+        return genai.Client(vertexai=True, project=project, location=location)
+
     return genai.Client(api_key=api_key)
 
 
@@ -197,7 +219,7 @@ def main():
    Audio: macOS Native Speech
 ================================================================
 """)
-    api_key = setup_api_key()
+    api_key = None if os.getenv("GOOGLE_CLOUD_PROJECT") else setup_api_key()
 
     if args.image:
         if not os.path.exists(args.image):
